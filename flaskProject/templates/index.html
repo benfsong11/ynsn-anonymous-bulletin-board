@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <title>윤산의 익명 게시판</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+      crossorigin="anonymous"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+      .wrap {
+        width: 600px;
+        margin: auto;
+      }
+      .title {
+        margin-bottom: 50px;
+        text-align: center;
+      }
+      .posts {
+        margin-top: 20px;
+      }
+      .title-box {
+        border: 1px solid #444444;
+        font-weight: bold;
+      }
+      .content-box {
+        border: 1px solid #444444;
+      }
+      .like-box {
+        border: 1px solid #444444;
+        text-align: center;
+      }
+      .number-box {
+        border: 1px solid #444444;
+        text-align: center;
+        margin-right: 10px;
+      }
+      .posts-table {
+        width: 600px;
+        text-align: center;
+      }
+      tbody > tr {
+        counter-increment: aaa;
+      }
+      tbody > tr > td:first-child:before {
+        content: counter(aaa);
+      }
+      th {
+        font-size: 24px;
+      }
+    </style>
+    <script type="text/javascript">
+      $(document).ready(function () {
+        showPost();
+        $("#content").on("keyup", function () {
+          $("#content_count").html("(" + $(this).val().length + " / 100)");
+
+          if ($(this).val().length > 100) {
+            $(this).val($(this).val().substring(0, 100));
+            $("#content_count").html("(100 / 100)");
+          }
+        });
+        $("#title").on("keyup", function () {
+          $("#title_count").html("(" + $(this).val().length + " / 20)");
+
+          if ($(this).val().length > 20) {
+            $(this).val($(this).val().substring(0, 20));
+            $("#title_count").html("(20 / 20)");
+          }
+        });
+      });
+
+      function uploadPost() {
+        let title = $("#title").val();
+        let content = $("#content").val();
+
+        $.ajax({
+          type: "POST",
+          url: "/post/upload",
+          data: { title_give: title, content_give: content },
+          success: function (response) {
+            alert(response["msg"]);
+            window.location.reload();
+          },
+        });
+      }
+
+      function showPost() {
+        $.ajax({
+          type: "GET",
+          url: "/post/list",
+          data: {},
+          success: function (response) {
+            let posts = response["all_posts"];
+            for (let i = 0; i < posts.length; i++) {
+              let title = posts[i]["title"];
+              let content = posts[i]["content"];
+              let like = posts[i]["like"];
+
+              let temp_html = `<tr>
+                        <td class="number-box"></td>
+                        <td class="title-box">${title}</td>
+                        <td class="content-box">${content}</td>
+                        <td class="like-box">${like}</td>
+                        <td><input class="like-button" onclick="likePost('${title}')" type="button" value="공감"></td>
+                        <td><input class="delete-button" onclick="deletePost('${title}')" type="button" value="삭제"></td>
+                        </tr>`;
+
+              $("#posts-box").append(temp_html);
+            }
+          },
+        });
+      }
+
+      function likePost(title) {
+        $.ajax({
+          type: "POST",
+          url: "/post/like",
+          data: { title_give: title },
+          success: function (response) {
+            alert(response["msg"]);
+            window.location.reload();
+          },
+        });
+      }
+
+      function deletePost(title) {
+        $.ajax({
+          type: "POST",
+          url: "/post/delete",
+          data: { title_give: title },
+          success: function (response) {
+            alert(response["msg"]);
+            window.location.reload();
+          },
+        });
+      }
+    </script>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1 class="title">윤산의 익명 게시판</h1>
+      <div class="mb-3">
+        <label for="exampleFormControlInput1" class="form-label">제목</label>
+        <input type="email" class="form-control" id="title" />
+        <div id="title_count">(0 / 20)</div>
+      </div>
+      <div class="mb-3">
+        <label for="exampleFormControlTextarea1" class="form-label">내용</label>
+        <textarea class="form-control" id="content" rows="3"></textarea>
+        <div id="content_count">(0 / 100)</div>
+      </div>
+      <button type="button" class="btn btn-primary" onclick="uploadPost()">
+        업로드
+      </button>
+      <div class="posts">
+        <table class="posts-table">
+          <thead>
+            <tr>
+              <th scope="col">#️⃣</th>
+              <th scope="col">제목</th>
+              <th scope="col">내용</th>
+              <th scope="col">❤️</th>
+            </tr>
+          </thead>
+          <tbody id="posts-box"></tbody>
+        </table>
+      </div>
+    </div>
+  </body>
+</html>
