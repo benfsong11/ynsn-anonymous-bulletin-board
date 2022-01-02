@@ -9,4 +9,6 @@ Flask, Ajax, JQuery
 재밌고 좋은 글에는 공감을 표현할 수 있습니다.
 부적절한 내용의 글은 삭제할 수 있습니다.
 
-[![윤산의 익명 게시판 구현 동영상](https://www.youtube.com/embed/y9-gCqV1KQQ/0.jpg)](https://www.youtube.com/embed/y9-gCqV1KQQ)
+유튜브에 구현 동영상을 올려 두었습니다.
+
+[![윤산의 익명 게시판 구현 동영상](http://img.youtube.com/vi/y9-gCqV1KQQ/0.jpg)](https://www.youtube.com/embed/y9-gCqV1KQQ)
